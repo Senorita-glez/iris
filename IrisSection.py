@@ -10,10 +10,14 @@ petalL = []
 petalW = []
 classs = []
 
-for row in rows:
-    values = row.split(',')
+for i in range(0, 25):
+    values = rows[i].split(',')
+    values2 = rows[i+50].split(',')
+    values3 = rows[i+100].split(',')
     if len(values) >= 5:
         data_array.append(values)
+        data_array.append(values2)
+        data_array.append(values3)
 
 data_array = np.array(data_array)
 print(data_array.shape)
@@ -48,6 +52,17 @@ class Iris:
         self.petalL = petalL
         self.petalW = petalW
         self.clase = clase
+        
+    def get_sepalL(self):
+        return self.sepalL
+    def get_sepalW(self):
+        return self.sepalW
+    def get_petalL(self):
+        return self.petalL
+    def get_petalW(self):
+        return self.petalW
+    def get_clase(self):
+        return self.clase
 
 objetos = []
 
@@ -89,12 +104,13 @@ class Punto:
         return self.y
     
     def get_clase(self):
-        if self.clase == 0:
+        return self.clase
+        '''if self.clase == 0:
             return 'Iris-setosa'
         elif self.clase == 1:
             return 'Iris-versicolor'   
         elif self.clase == 2:
-            return 'Iris-virginica'
+            return 'Iris-virginica'''
 
     def set_x(self, x):
         self.x = x
@@ -127,7 +143,7 @@ class AlgoritmoPuntosCercanos:
         return punto_mas_cercano
 
     def calcular_distancia(self, punto1, punto2):
-        # Implementa aquí el cálculo de distancia entre dos puntos (puedes utilizar la fórmula de distancia euclidiana)
+        #distancia euclidiana
         distancia = ((punto1.get_x() - punto2.get_x()) ** 2 + (punto1.get_y() - punto2.get_y()) ** 2) ** 0.5
         return distancia
     
@@ -157,6 +173,51 @@ algoritmo = AlgoritmoPuntosCercanos()
 for punto in puntos:
     algoritmo.agregar_punto(punto)
 
-punto_referencia = Punto(0, 0, None)
-punto_cercano = algoritmo.encontrar_punto_mas_cercano(punto_referencia)
-print("El punto más cercano a (0, 0) es: ({}, {}, {})".format(punto_cercano.get_x(), punto_cercano.get_y(), punto_cercano.get_clase()))
+data_pruebas = []
+
+for i in range(26, 50):
+    values = rows[i].split(',')
+    values2 = rows[i+50].split(',')
+    values3 = rows[i+100].split(',')
+    if len(values) >= 5:
+        data_pruebas.append(values)
+        data_pruebas.append(values2)
+        data_pruebas.append(values3)
+
+data_pruebas = np.array(data_pruebas)
+print(data_pruebas.shape)
+
+objetosPrueba = []
+
+for data in data_pruebas:
+    if len(data) >= 5:
+        sepalL = float(data[0]) if data[0] else None
+        sepalW = float(data[1]) if data[1] else None
+        petalL = float(data[2]) if data[2] else None
+        petalW = float(data[3]) if data[3] else None
+        clase = data[4] if data[4] else None
+
+        # Asignar valores numéricos a la clase
+        if clase == 'Iris-setosa':
+            clase = 0
+        elif clase == 'Iris-versicolor':
+            clase = 1
+        elif clase == 'Iris-virginica':
+            clase = 2
+
+        # Crear un objeto y agregarlo a la lista
+        objeto = Iris(sepalL, sepalW, petalL, petalW, clase)
+        objetosPrueba.append(objeto)
+
+prediction = np.zeros((3,3), dtype=int)
+print (prediction)
+for objetoP in objetosPrueba:
+    punto_referencia = Punto(objetoP.get_petalL(), objetoP.get_petalW(), None)
+    punto_cercano = algoritmo.encontrar_punto_mas_cercano(punto_referencia)
+    prediction[objetoP.get_clase()][punto_cercano.get_clase()] =     prediction[objetoP.get_clase()][punto_cercano.get_clase()]+ 1
+    '''prediction = False
+    if (objetoP.get_clase() == punto_cercano.get_clase()):
+    print("El punto más cercano a ({},{}) es: ({}, {}) prediccion es {}".format(objetoP.get_petalL(), objetoP.get_petalW(), punto_cercano.get_x(), punto_cercano.get_y(), prediction))'''
+    
+print (prediction)
+
